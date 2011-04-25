@@ -1,20 +1,88 @@
 # NAME
 
-Apache2::Authen::Redmine -
+Apache2::Authen::Redmine - Basic authentication by Redmine accounts
 
 # SYNOPSIS
 
-  use Apache2::Authen::Redmine;
+  <Location /to/protect>
+    PerlAuthenHandler Apache2::Authen::Redmine
+    PerlSetVar redmine_dsn      dbi:mysql:database=redmine;host=localhost;port=3306
+    PerlSetVar redmine_user     dbuser
+    PerlSetVar redmine_password dbpasswd
+
+    AuthType Basic
+    AuthName "Protected area"
+    Require  valid-user
+  </Location>
 
 # DESCRIPTION
 
-Apache2::Authen::Redmine is
+Apache2::Authen::Redmine allows you to authenticate requests with using
+login-name and password of Redmine.
+
+Many of our projects used Subverion as for SCM and Redmine for BTS, and
+hosted both of them by Apache server. In those days, we used to maintain
+login information for Subversion repositories using classic htpasswd
+command, wheres Redmine also has its own login information.
+After a while, that maintenance became heavily cumbersome, as you can
+expected.
+
+Thus, this module was born!
+
+# CONFIGURATION
+
+Just described in [SYNOPSIS](#pod_SYNOPSIS), use `PerlAuthenHandler` directive in your
+directory where you want to require password authentication to access.
+Besides, you need to set the following configuration variables using
+`PerlSetVar` directive.
+
+## redmine_dsn
+
+  PerlSetVar redmine_dsn dbi:dbd:database;attrs
+
+Specify DSN to access your Redmine's database.
+See also [DBI](http://search.cpan.org/perldoc?DBI).
+
+## redmine_user
+  
+
+  PerlSetVar redmine_user user_name
+
+Specify user name to access your Redmine's database.
+
+## redmine_password
+
+  PerlSetVar redmine_password password
+
+Specify password to access your Redmine's database.
+
+# CAVEAT
+
+__THIS MODULE IS VERY DIRTY__ since it makes direct access to Redmine's
+database.
+
+It is better to use LDAP than this module for centralizing authentication
+information. LDAP is a clean and standard way to do it, and of course
+supported by Redmine.
+
+But, configuring and maintaining LDAP server is complicated work. So, this
+module is still convenient for users who want to avoid complex work and
+looking for a simple solution.
+
+# WHY Perl?
+
+Why this module is implemented in Perl wheres Redmine is implemented in
+Ruby? The reason is just I like Perl.
+
+Do you need any other reason?
 
 # AUTHOR
 
 Daisuke (yet another) Maki <yanother {at} cpan.org>
 
 # SEE ALSO
+
+[mod_perl 2.0 Server Configuration](http://perl.apache.org/docs/2.0/user/config/config.html)
 
 # LICENSE
 
