@@ -10,6 +10,7 @@ use Apache2::RequestRec  ();
 use Apache2::RequestUtil (); 
 use Apache2::Access      ();
 use Apache2::Log         ();
+use APR::Table           ();
 
 use DBI;
 use Digest::SHA qw/sha1_hex/;
@@ -48,14 +49,15 @@ sub handler {
         $r->dir_config->get('redmine_user'),
         $r->dir_config->get('redmine_password'),
     )  or die $DBI::errstr;
-    my @row = $dbi->selectrow_array(
-        'SELECT id FROM users WHERE status = 1 AND login = ? AND hashed_password = ?',
+    my $row = $dh->selectrow_hashref(
+        'SELECT hashed_password, salt FROM users WHERE status != 0 AND login = ?',
         {},
-        $username, sha1_hex($pw)
-    );
-    return OK  if @row;
-    
-    return AUTH_REQUIRED;
+        $username
+    )  or return AUTH_REQUIRED;
+
+    $row->{hashed_password} eq sha1_hex($row->{salt} . sha1_hex($pw))
+      ? OK
+      : AUTH_REQUIRED;
 }
 
 
