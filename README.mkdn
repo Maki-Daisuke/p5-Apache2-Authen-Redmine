@@ -4,16 +4,18 @@ Apache2::Authen::Redmine - Basic authentication by Redmine accounts
 
 # SYNOPSIS
 
-  <Location /to/protect>
+```
+<Location /to/protect>
     PerlAuthenHandler Apache2::Authen::Redmine
     PerlSetVar redmine_dsn      dbi:mysql:database=redmine;host=localhost;port=3306
     PerlSetVar redmine_user     dbuser
     PerlSetVar redmine_password dbpasswd
-
+    
     AuthType Basic
     AuthName "Protected area"
     Require  valid-user
-  </Location>
+</Location>
+```
 
 # DESCRIPTION
 
